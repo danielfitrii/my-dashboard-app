@@ -13,9 +13,9 @@ import {
   ScaleIcon,
   PaletteIcon,
   DatabaseIcon,
-  ArrowDownIcon,
-  ArrowUpIcon,
-  ChevronDownIcon
+  TrendingDownIcon,
+  ChevronDownIcon,
+  TagIcon
 } from 'lucide-react'
 
 import {
@@ -125,7 +125,7 @@ const AppSidebar = () => {
                       <SidebarMenuSubItem>
                         <SidebarMenuSubButton asChild isActive={pathname === '/settings/categories/budget'}>
                           <Link href='/settings/categories/budget'>
-                            <WalletIcon />
+                            <TagIcon />
                             <span>Budget</span>
                           </Link>
                         </SidebarMenuSubButton>
@@ -133,7 +133,7 @@ const AppSidebar = () => {
                       <SidebarMenuSubItem>
                         <SidebarMenuSubButton asChild isActive={pathname === '/settings/categories/expenses'}>
                           <Link href='/settings/categories/expenses'>
-                            <ArrowDownIcon />
+                            <TrendingDownIcon />
                             <span>Expenses</span>
                           </Link>
                         </SidebarMenuSubButton>
@@ -141,7 +141,7 @@ const AppSidebar = () => {
                       <SidebarMenuSubItem>
                         <SidebarMenuSubButton asChild isActive={pathname === '/settings/categories/income'}>
                           <Link href='/settings/categories/income'>
-                            <ArrowUpIcon />
+                            <WalletIcon />
                             <span>Income</span>
                           </Link>
                         </SidebarMenuSubButton>
