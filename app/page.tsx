@@ -2,6 +2,8 @@ import { ArrowUpIcon, WalletIcon, TrendingDownIcon, CreditCardIcon, ScaleIcon } 
 
 import MainLayout from '@/components/layout/MainLayout'
 import StatisticsCard from '@/components/shadcn-studio/blocks/statistics-card-01'
+import { ChartAreaFinancial } from '@/components/shadcn-studio/blocks/chart-area-financial'
+import { ChartPieExpenses } from '@/components/shadcn-studio/blocks/chart-pie-expenses'
 
 // Statistics card data
 const StatisticsCardData = [
@@ -35,16 +37,20 @@ export default function Dashboard() {
   return (
     <MainLayout>
       <div className='py-4 sm:py-6 lg:py-8'>
-        <div className='mx-auto grid max-w-7xl gap-4 px-4 sm:grid-cols-2 sm:px-6 lg:grid-cols-4 lg:px-8'>
-          {StatisticsCardData.map((card, index) => (
-            <StatisticsCard
-              key={index}
-              icon={card.icon}
-              title={card.title}
-              value={card.value}
-              changePercentage={card.changePercentage}
-            />
-          ))}
+        <div className='mx-auto max-w-7xl space-y-6 px-4 sm:px-6 lg:px-8'>
+          <div className='grid gap-4 sm:grid-cols-2 lg:grid-cols-4'>
+            {StatisticsCardData.map((card, index) => (
+              <StatisticsCard
+                key={index}
+                icon={card.icon}
+                title={card.title}
+                value={card.value}
+                changePercentage={card.changePercentage}
+              />
+            ))}
+          </div>
+          <ChartAreaFinancial />
+          <ChartPieExpenses />
         </div>
       </div>
     </MainLayout>
