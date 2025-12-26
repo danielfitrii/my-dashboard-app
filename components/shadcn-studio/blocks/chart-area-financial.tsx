@@ -123,11 +123,11 @@ const chartData = [
 const chartConfig = {
   income: {
     label: 'Income',
-    color: 'var(--chart-1)'
+    color: 'var(--chart-2)'
   },
   expenses: {
     label: 'Expenses',
-    color: 'var(--chart-2)'
+    color: 'var(--chart-1)'
   }
 } satisfies ChartConfig
 
