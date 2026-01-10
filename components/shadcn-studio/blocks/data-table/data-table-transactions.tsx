@@ -13,7 +13,7 @@ import {
   type SortingState,
   type VisibilityState
 } from '@tanstack/react-table'
-import { MoreHorizontal } from 'lucide-react'
+import { MoreHorizontal, Plus } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -39,6 +39,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { DataTableColumnHeader } from './data-table-column-header'
 import { DataTablePagination } from './data-table-pagination'
 import { DataTableViewOptions } from './data-table-view-options'
+import { AddTransactionDialog } from '../dialog-add-transaction'
 
 export type Transaction = {
   id: string
@@ -47,7 +48,7 @@ export type Transaction = {
   amount: number
   date: string
   type: 'Income' | 'Expense'
-  status: 'completed' | 'pending' | 'failed'
+  runningBalance: number
 }
 
 const data: Transaction[] = [
@@ -58,7 +59,7 @@ const data: Transaction[] = [
     amount: 245.5,
     date: '2024-06-28',
     type: 'Expense',
-    status: 'completed'
+    runningBalance: 15240.0
   },
   {
     id: '2',
@@ -67,7 +68,7 @@ const data: Transaction[] = [
     amount: 3500.0,
     date: '2024-06-27',
     type: 'Income',
-    status: 'completed'
+    runningBalance: 15485.5
   },
   {
     id: '3',
@@ -76,7 +77,7 @@ const data: Transaction[] = [
     amount: 120.0,
     date: '2024-06-26',
     type: 'Expense',
-    status: 'pending'
+    runningBalance: 11985.5
   },
   {
     id: '4',
@@ -85,7 +86,7 @@ const data: Transaction[] = [
     amount: 850.0,
     date: '2024-06-25',
     type: 'Income',
-    status: 'completed'
+    runningBalance: 12105.5
   },
   {
     id: '5',
@@ -94,7 +95,7 @@ const data: Transaction[] = [
     amount: 45.2,
     date: '2024-06-24',
     type: 'Expense',
-    status: 'completed'
+    runningBalance: 11255.5
   },
   {
     id: '6',
@@ -103,7 +104,7 @@ const data: Transaction[] = [
     amount: 89.5,
     date: '2024-06-23',
     type: 'Expense',
-    status: 'completed'
+    runningBalance: 11300.7
   },
   {
     id: '7',
@@ -112,7 +113,7 @@ const data: Transaction[] = [
     amount: 250.0,
     date: '2024-06-22',
     type: 'Income',
-    status: 'completed'
+    runningBalance: 11390.2
   },
   {
     id: '8',
@@ -121,7 +122,7 @@ const data: Transaction[] = [
     amount: 65.0,
     date: '2024-06-21',
     type: 'Expense',
-    status: 'failed'
+    runningBalance: 11140.2
   },
   {
     id: '9',
@@ -130,7 +131,7 @@ const data: Transaction[] = [
     amount: 32.5,
     date: '2024-06-20',
     type: 'Expense',
-    status: 'completed'
+    runningBalance: 11205.2
   },
   {
     id: '10',
@@ -139,7 +140,7 @@ const data: Transaction[] = [
     amount: 1200.0,
     date: '2024-06-19',
     type: 'Income',
-    status: 'completed'
+    runningBalance: 11237.7
   },
   {
     id: '11',
@@ -148,7 +149,7 @@ const data: Transaction[] = [
     amount: 12.5,
     date: '2024-06-18',
     type: 'Expense',
-    status: 'completed'
+    runningBalance: 10037.7
   },
   {
     id: '12',
@@ -157,7 +158,7 @@ const data: Transaction[] = [
     amount: 49.99,
     date: '2024-06-17',
     type: 'Expense',
-    status: 'completed'
+    runningBalance: 10050.2
   }
 ]
 
@@ -185,6 +186,18 @@ export const columns: ColumnDef<Transaction>[] = [
     enableHiding: false
   },
   {
+    accessorKey: 'date',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title='Date' />
+    ),
+    cell: ({ row }) => {
+      const dateString = row.getValue('date') as string
+      // Format date consistently: YYYY-MM-DD to MM/DD/YYYY
+      const [year, month, day] = dateString.split('-')
+      return <div>{`${month}/${day}/${year}`}</div>
+    }
+  },
+  {
     accessorKey: 'description',
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title='Description' />
@@ -192,6 +205,26 @@ export const columns: ColumnDef<Transaction>[] = [
     cell: ({ row }) => (
       <div className='font-medium'>{row.getValue('description')}</div>
     )
+  },
+  {
+    accessorKey: 'type',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title='Type' />
+    ),
+    cell: ({ row }) => {
+      const type = row.getValue('type') as string
+      return (
+        <span
+          className={`text-xs font-medium ${
+            type === 'Income'
+              ? 'text-green-600 dark:text-green-400'
+              : 'text-red-600 dark:text-red-400'
+          }`}
+        >
+          {type}
+        </span>
+      )
+    }
   },
   {
     accessorKey: 'category',
@@ -224,57 +257,19 @@ export const columns: ColumnDef<Transaction>[] = [
     }
   },
   {
-    accessorKey: 'date',
+    accessorKey: 'runningBalance',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Date' />
+      <DataTableColumnHeader column={column} title='Running Balance' />
     ),
     cell: ({ row }) => {
-      const dateString = row.getValue('date') as string
-      // Format date consistently: YYYY-MM-DD to MM/DD/YYYY
-      const [year, month, day] = dateString.split('-')
-      return <div>{`${month}/${day}/${year}`}</div>
-    }
-  },
-  {
-    accessorKey: 'type',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Type' />
-    ),
-    cell: ({ row }) => {
-      const type = row.getValue('type') as string
+      const balance = parseFloat(row.getValue('runningBalance'))
+      const formatted = new Intl.NumberFormat('en-MY', {
+        style: 'currency',
+        currency: 'MYR'
+      }).format(balance)
+
       return (
-        <span
-          className={`text-xs font-medium ${
-            type === 'Income'
-              ? 'text-green-600 dark:text-green-400'
-              : 'text-red-600 dark:text-red-400'
-          }`}
-        >
-          {type}
-        </span>
-      )
-    }
-  },
-  {
-    accessorKey: 'status',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Status' />
-    ),
-    cell: ({ row }) => {
-      const status = row.getValue('status') as string
-      const statusColors = {
-        completed: 'text-green-600 dark:text-green-400',
-        pending: 'text-yellow-600 dark:text-yellow-400',
-        failed: 'text-red-600 dark:text-red-400'
-      }
-      return (
-        <span
-          className={`text-xs font-medium capitalize ${
-            statusColors[status as keyof typeof statusColors]
-          }`}
-        >
-          {status}
-        </span>
+        <div className='font-medium'>{formatted}</div>
       )
     }
   },
@@ -321,6 +316,7 @@ export function DataTableTransactions() {
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
+  const [isAddDialogOpen, setIsAddDialogOpen] = React.useState(false)
 
   const table = useReactTable({
     data,
@@ -363,7 +359,18 @@ export function DataTableTransactions() {
               }
               className='w-full max-w-sm'
             />
-            <DataTableViewOptions table={table} />
+            <div className='ml-auto flex items-center gap-2'>
+              <Button
+                variant='default'
+                size='sm'
+                className='gap-2'
+                onClick={() => setIsAddDialogOpen(true)}
+              >
+                <Plus className='size-4' />
+                <span>Add Transaction</span>
+              </Button>
+              <DataTableViewOptions table={table} />
+            </div>
           </div>
           <div className='overflow-x-auto rounded-md border'>
             <Table>
@@ -420,6 +427,15 @@ export function DataTableTransactions() {
           </div>
         </div>
       </CardContent>
+      <AddTransactionDialog
+        open={isAddDialogOpen}
+        onOpenChange={setIsAddDialogOpen}
+        onAdd={(transaction) => {
+          // TODO: Add transaction to data source
+          console.log('New transaction:', transaction)
+          // For now, just log it. In a real app, you'd update the data array or call an API
+        }}
+      />
     </Card>
   )
 }

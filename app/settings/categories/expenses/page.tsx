@@ -1,6 +1,11 @@
-import MainLayout from '@/components/layout/MainLayout'
+import PageTemplate from '@/components/layout/PageTemplate'
+import { AuthGuard } from '@/components/auth-guard'
 
 export default function ExpenseCategoriesPage() {
-  return <MainLayout />
+  return (
+    <AuthGuard requireAuth={true} redirectTo="/login">
+      <PageTemplate />
+    </AuthGuard>
+  )
 }
 

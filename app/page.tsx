@@ -1,10 +1,11 @@
 import { ArrowUpIcon, WalletIcon, TrendingDownIcon, CreditCardIcon, ScaleIcon } from 'lucide-react'
 
 import MainLayout from '@/components/layout/MainLayout'
-import StatisticsCard from '@/components/shadcn-studio/blocks/statistics-card-01'
+import StatisticsCard from '@/components/shadcn-studio/blocks/statistics-card'
 import { ChartAreaFinancial } from '@/components/shadcn-studio/blocks/chart-area-financial'
 import { ChartPieExpenses } from '@/components/shadcn-studio/blocks/chart-pie-expenses'
-import { DataTableTransactions } from '@/components/shadcn-studio/blocks/data-table-transactions'
+import { DataTableTransactions } from '@/components/shadcn-studio/blocks/data-table/data-table-transactions'
+import { AuthGuard } from '@/components/auth-guard'
 
 // Statistics card data
 const StatisticsCardData = [
@@ -72,30 +73,32 @@ const StatisticsCardData = [
 
 export default function Dashboard() {
   return (
-    <MainLayout>
-      <div className='py-4 sm:py-6 lg:py-8'>
-        <div className='mx-auto max-w-7xl space-y-6 px-4 sm:px-6 lg:px-8'>
-          <div className='grid gap-6 lg:grid-cols-3'>
-            <div className='grid gap-4 sm:grid-cols-2 lg:col-span-2'>
-              {StatisticsCardData.map((card, index) => (
-                <StatisticsCard
-                  key={index}
-                  icon={card.icon}
-                  title={card.title}
-                  value={card.value}
-                  changePercentage={card.changePercentage}
-                  chartData={card.chartData}
-                />
-              ))}
-            </div>
-            <div className='lg:col-span-1'>
-              <ChartPieExpenses />
-            </div>
-        </div>
-          <ChartAreaFinancial />
-          <DataTableTransactions />
-        </div>
-    </div>
-    </MainLayout>
+    <AuthGuard requireAuth={true} redirectTo="/login">
+      <MainLayout>
+        <div className='py-4 sm:py-6 lg:py-8'>
+          <div className='mx-auto max-w-7xl space-y-6 px-4 sm:px-6 lg:px-8'>
+            <div className='grid gap-6 lg:grid-cols-3'>
+              <div className='grid gap-4 sm:grid-cols-2 lg:col-span-2'>
+                {StatisticsCardData.map((card, index) => (
+                  <StatisticsCard
+                    key={index}
+                    icon={card.icon}
+                    title={card.title}
+                    value={card.value}
+                    changePercentage={card.changePercentage}
+                    chartData={card.chartData}
+                  />
+                ))}
+              </div>
+              <div className='lg:col-span-1'>
+                <ChartPieExpenses />
+              </div>
+          </div>
+            <ChartAreaFinancial />
+            <DataTableTransactions />
+          </div>
+      </div>
+      </MainLayout>
+    </AuthGuard>
   )
 }
